@@ -1,1 +1,101 @@
 
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HEMEN Alışveriş</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial;background:#f5f5f5;color:#222}
+header{background:#ff7900;color:white;text-align:center;padding:22px}
+header h1{font-size:38px;margin:0}
+header p{margin:6px}
+nav{display:flex;gap:10px;padding:12px;background:white}
+button{background:#ff7900;color:white;border:0;border-radius:8px;padding:12px;font-weight:bold}
+nav button{flex:1}
+main{padding:15px;max-width:750px;margin:auto}
+.card{background:white;padding:16px;border-radius:12px;margin:12px 0}
+h2{color:#ff7900}
+input{width:100%;padding:13px;margin:7px 0;border:1px solid #ddd;border-radius:8px;font-size:16px}
+.product{background:white;padding:14px;border-radius:10px;margin:10px 0}
+.price{color:#ff7900;font-weight:bold;font-size:20px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<header>
+<h1>HEMEN</h1>
+<p>Aradığın her şey hemen burada!</p>
+</header>
+<nav>
+<button onclick="page('home')">Ana Sayfa</button>
+<button onclick="page('seller')">Satıcı Paneli</button>
+</nav>
+<main>
+<section id="home">
+<div class="card">
+<h2>Ürün Ara</h2>
+<input id="search" placeholder="Ürün ara..." oninput="render()">
+</div>
+<h2>Ürünler</h2>
+<div id="products"></div>
+</section>
+
+<section id="seller" class="hidden">
+<div class="card">
+<h2>Satıcı Paneli</h2>
+<p>Mağaza: Bilişim Teknoloji</p>
+<p>Sahibi: İlhan Kaya</p>
+<p>Kategori: Elektronik</p>
+<p>Şehir: Malatya</p>
+</div>
+<div class="card">
+<h2>Yeni Ürün Ekle</h2>
+<input id="name" placeholder="Ürün adı">
+<input id="price" type="number" placeholder="Fiyat (TL)">
+<input id="stock" type="number" placeholder="Stok">
+<button onclick="add()">Ürünü Yayınla</button>
+<p id="message"></p>
+</div>
+<div class="card">
+<h2>Ürünlerim</h2>
+<div id="myproducts"></div>
+</div>
+</section>
+</main>
+<footer style="text-align:center;padding:20px">© 2026 HEMEN</footer>
+<script>
+let items=[];
+try{items=JSON.parse(localStorage.getItem("hemen")||"[]");if(!Array.isArray(items))items=[]}catch(e){items=[]}
+function save(){localStorage.setItem("hemen",JSON.stringify(items))}
+function page(p){
+document.getElementById("home").classList.toggle("hidden",p!=="home");
+document.getElementById("seller").classList.toggle("hidden",p!=="seller");
+render();
+}
+function add(){
+let n=document.getElementById("name").value.trim();
+let price=Number(document.getElementById("price").value);
+let stock=Number(document.getElementById("stock").value);
+if(!n||price<=0||stock<0){document.getElementById("message").textContent="Bilgileri kontrol edin.";return}
+items.push({id:Date.now(),n,price,stock});
+save();
+document.getElementById("name").value="";
+document.getElementById("price").value="";
+document.getElementById("stock").value="";
+document.getElementById("message").textContent="Ürün eklendi!";
+render();
+}
+function del(id){items=items.filter(x=>x.id!==id);save();render()}
+function render(){
+let q=(document.getElementById("search")?.value||"").toLocaleLowerCase("tr");
+document.getElementById("products").innerHTML=items.filter(x=>x.n.toLocaleLowerCase("tr").includes(q)).map(x=>`<div class="product"><b>${safe(x.n)}</b><p class="price">${x.price} TL</p>Stok: ${x.stock}</div>`).join("")||"<p>Henüz ürün yok.</p>";
+document.getElementById("myproducts").innerHTML=items.map(x=>`<div class="product">${safe(x.n)} - ${x.price} TL <button onclick="del(${x.id})">Sil</button></div>`).join("")||"Henüz ürün eklenmedi.";
+}
+function safe(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+render();
+</script>
+</body>
+</html>
+
