@@ -1,1 +1,81 @@
 
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HEMEN | Online Alışveriş</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f5f5f5;color:#222}
+header{background:#ff7200;color:white;padding:18px}
+.logo{font-size:32px;font-weight:bold}
+header p{margin:5px 0 12px}
+.search{width:100%;padding:14px;border:0;border-radius:9px;font-size:16px}
+nav{background:white;padding:14px;display:flex;gap:20px;overflow-x:auto}
+nav a{color:#333;text-decoration:none;font-weight:bold;white-space:nowrap}
+.hero{background:#ff7200;color:white;margin:15px;padding:25px;border-radius:15px;text-align:center}
+.hero h2{font-size:27px}
+.section-title{padding:0 15px}
+.categories,.products{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:15px}
+.category,.product{background:white;border-radius:12px;padding:18px;text-align:center}
+.emoji{font-size:48px}
+.product button,.seller button{background:#ff7200;color:white;border:0;border-radius:8px;padding:12px;width:100%;font-weight:bold}
+.price{color:#ff7200;font-weight:bold;font-size:20px}
+.seller{background:white;margin:15px;padding:20px;border-radius:12px;text-align:center}
+footer{background:#222;color:white;text-align:center;padding:25px;margin-top:20px}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">🛍️ HEMEN</div>
+<p>Aradığın her şey HEMEN yanında!</p>
+<input class="search" id="search" placeholder="Ürün ara..." oninput="searchProducts()">
+</header>
+<nav>
+<a href="#">Ana Sayfa</a>
+<a href="#kategoriler">Kategoriler</a>
+<a href="#urunler">Ürünler</a>
+<a href="#satici">Satıcı Ol</a>
+</nav>
+<section class="hero">
+<h2>Alışverişin Yeni Adresi HEMEN!</h2>
+<p>Binlerce ürün, avantajlı fiyatlar.</p>
+</section>
+<h2 class="section-title" id="kategoriler">Popüler Kategoriler</h2>
+<div class="categories">
+<div class="category"><div class="emoji">📱</div>Elektronik</div>
+<div class="category"><div class="emoji">👕</div>Giyim</div>
+<div class="category"><div class="emoji">🏠</div>Ev ve Yaşam</div>
+<div class="category"><div class="emoji">💻</div>Bilgisayar</div>
+<div class="category"><div class="emoji">👟</div>Ayakkabı</div>
+<div class="category"><div class="emoji">🧸</div>Oyuncak</div>
+</div>
+<h2 class="section-title" id="urunler">Öne Çıkan Ürünler</h2>
+<div class="products" id="productList">
+<div class="product"><div class="emoji">📱</div><h3>Akıllı Telefon</h3><p class="price">₺12.999</p><button onclick="alert('Ürün yakında satışta!')">İncele</button></div>
+<div class="product"><div class="emoji">💻</div><h3>Dizüstü Bilgisayar</h3><p class="price">₺24.999</p><button onclick="alert('Ürün yakında satışta!')">İncele</button></div>
+<div class="product"><div class="emoji">🎧</div><h3>Kulaklık</h3><p class="price">₺899</p><button onclick="alert('Ürün yakında satışta!')">İncele</button></div>
+<div class="product"><div class="emoji">⌚</div><h3>Akıllı Saat</h3><p class="price">₺1.499</p><button onclick="alert('Ürün yakında satışta!')">İncele</button></div>
+</div>
+<section class="seller" id="satici">
+<h2>Satıcılarımız Aramıza Katılıyor!</h2>
+<p>Mağazanı aç, ürünlerini HEMEN'de sergile.</p>
+<button onclick="alert('Satıcı paneli sonraki aşamada hazırlanacak!')">Satıcı Ol</button>
+</section>
+<footer>
+<h2>HEMEN</h2>
+<p>Türkiye'nin yeni alışveriş platformu.</p>
+<p>© 2026 HEMEN</p>
+</footer>
+<script>
+function searchProducts(){
+let q=document.getElementById('search').value.toLocaleLowerCase('tr');
+document.querySelectorAll('.product').forEach(p=>{
+p.style.display=p.innerText.toLocaleLowerCase('tr').includes(q)?'block':'none';
+});
+}
+</script>
+</body>
+</html>
