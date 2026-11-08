@@ -77,5 +77,166 @@ p.style.display=p.innerText.toLocaleLowerCase('tr').includes(q)?'block':'none';
 });
 }
 </script>
+</body><!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HEMEN Alışveriş</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial;background:#f5f5f5;color:#222}
+header{background:#ff7200;color:white;padding:20px}
+.logo{font-size:32px;font-weight:bold}
+input,select{width:100%;padding:13px;margin:7px 0;border:1px solid #ddd;border-radius:8px}
+button{background:#ff7200;color:white;border:0;padding:13px;border-radius:8px;font-weight:bold;cursor:pointer}
+nav{background:white;padding:15px;display:flex;gap:20px;overflow:auto}
+nav a{color:#333;text-decoration:none;font-weight:bold}
+.hero,.panel{background:white;margin:15px;padding:20px;border-radius:12px}
+.hero{text-align:center;background:#ff7200;color:white}
+.panel h2{color:#ff7200}
+.products{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:15px}
+.product{background:white;padding:12px;border-radius:10px;text-align:center}
+.price{color:#ff7200;font-weight:bold}
+.hidden{display:none}
+footer{background:#222;color:white;text-align:center;padding:20px}
+</style>
+</head>
+<body>
+
+<header>
+<div class="logo">🛍️ HEMEN</div>
+<p>Aradığın her şey HEMEN yanında!</p>
+<input id="search" placeholder="Ürün ara..." oninput="searchProducts()">
+</header>
+
+<nav>
+<a href="#anasayfa">Ana Sayfa</a>
+<a href="#urunler">Ürünler</a>
+<a href="#satici">Satıcı Paneli</a>
+</nav>
+
+<section class="hero" id="anasayfa">
+<h2>Alışverişin Yeni Adresi HEMEN!</h2>
+<p>Türkiye'nin yeni alışveriş platformu.</p>
+</section>
+
+<h2 style="padding-left:15px">Ürünler</h2>
+<div class="products" id="productList"></div>
+
+<section class="panel" id="satici">
+<h2>🏪 HEMEN SATICI PANELİ</h2>
+<h3>Bilişim Teknoloji</h3>
+<p>Mağaza sahibi: İlhan Kaya</p>
+<p>Şehir: Malatya</p>
+<hr>
+
+<h3>➕ Yeni Ürün Ekle</h3>
+
+<input id="urunAdi" placeholder="Ürün adı">
+<input id="urunFiyat" type="number" placeholder="Ürün fiyatı (TL)">
+<input id="urunStok" type="number" placeholder="Stok adedi">
+<input id="urunFoto" type="url" placeholder="Ürün fotoğrafı bağlantısı (isteğe bağlı)">
+
+<button onclick="urunEkle()" style="width:100%">
+Ürünü Mağazaya Ekle
+</button>
+
+<hr>
+<h3>📦 Mağazamdaki Ürünler</h3>
+<div id="magazaUrunleri"></div>
+
+<h3>📊 Mağaza Bilgileri</h3>
+<p>Mağaza: Bilişim Teknoloji</p>
+<p>Ürün sayısı: <span id="urunSayisi">0</span></p>
+</section>
+
+<footer>
+<h2>HEMEN 🧡</h2>
+<p>Türkiye'nin yeni alışveriş platformu.</p>
+<p>© 2026 HEMEN</p>
+</footer>
+
+<script>
+let urunler = JSON.parse(
+localStorage.getItem("hemenUrunler") || "[]"
+);
+
+function kaydet(){
+localStorage.setItem("hemenUrunler",
+JSON.stringify(urunler));
+}
+
+function urunEkle(){
+let ad=document.getElementById("urunAdi").value.trim();
+let fiyat=Number(document.getElementById("urunFiyat").value);
+let stok=Number(document.getElementById("urunStok").value);
+let foto=document.getElementById("urunFoto").value.trim();
+
+if(!ad || fiyat<=0 || stok<0 ||
+document.getElementById("urunFiyat").value==="" ||
+document.getElementById("urunStok").value===""){
+alert("Lütfen ürün bilgilerini doğru girin.");
+return;
+}
+
+urunler.push({ad,fiyat,stok,foto});
+kaydet();
+goster();
+
+document.getElementById("urunAdi").value="";
+document.getElementById("urunFiyat").value="";
+document.getElementById("urunStok").value="";
+document.getElementById("urunFoto").value="";
+
+alert("Ürün mağazana eklendi!");
+}
+
+function urunSil(index){
+urunler.splice(index,1);
+kaydet();
+goster();
+}
+
+function goster(){
+document.getElementById("urunSayisi").innerText=urunler.length;
+
+document.getElementById("productList").innerHTML=
+urunler.map(u=>`
+<div class="product">
+${u.foto ? `<img src="${u.foto}" style="width:100%;max-height:120px;object-fit:contain">` : "📦"}
+<h3>${guvenli(u.ad)}</h3>
+<p class="price">${u.fiyat.toLocaleString("tr-TR")} TL</p>
+<p>Stok: ${u.stok}</p>
+</div>`).join("");
+
+document.getElementById("magazaUrunleri").innerHTML=
+urunler.map((u,i)=>`
+<div style="background:#f5f5f5;padding:12px;margin:8px 0;border-radius:8px">
+<b>${guvenli(u.ad)}</b>
+<p>${u.fiyat} TL | Stok: ${u.stok}</p>
+<button onclick="urunSil(${i})">Ürünü Sil</button>
+</div>`).join("") || "Henüz ürün eklenmedi.";
+}
+
+function guvenli(s){
+let d=document.createElement("div");
+d.textContent=s;
+return d.innerHTML;
+}
+
+function searchProducts(){
+let q=document.getElementById("search").value
+.toLocaleLowerCase("tr");
+document.querySelectorAll("#productList .product")
+.forEach(p=>{
+p.style.display=p.innerText.toLocaleLowerCase("tr")
+.includes(q)?"block":"none";
+});
+}
+
+goster();
+</script>
 </body>
+</html>
 </html>
