@@ -1,0 +1,134 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HEMEN - Alışveriş</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f5f5f5;color:#222}
+header{background:#ff7900;color:white;padding:20px;text-align:center}
+header h1{margin:0;font-size:34px}
+header p{margin:5px}
+nav{display:flex;justify-content:center;gap:10px;padding:12px;background:white;flex-wrap:wrap}
+button{background:#ff7900;color:white;border:0;padding:12px 16px;border-radius:8px;font-weight:bold;cursor:pointer}
+input{width:100%;padding:13px;margin:7px 0;border:1px solid #ddd;border-radius:8px;font-size:16px}
+main{max-width:900px;margin:auto;padding:15px}
+.panel{background:white;padding:16px;border-radius:12px;margin:15px 0}
+h2{color:#f47700}
+.product{background:white;padding:14px;border-radius:10px;margin:12px 0;display:flex;gap:12px;align-items:center}
+.product img{width:90px;height:90px;object-fit:cover;border-radius:8px}
+.product-info{flex:1;min-width:0}
+.price{color:#f47700;font-size:20px;font-weight:bold}
+.hidden{display:none}
+footer{text-align:center;padding:25px;color:#777}
+</style>
+</head>
+<body>
+<header>
+<h1>HEMEN</h1>
+<p>Aradığın her şey hemen burada!</p>
+</header>
+<nav>
+<button onclick="showPage('home')">Ana Sayfa</button>
+<button onclick="showPage('seller')">Satıcı Paneli</button>
+</nav>
+<main>
+<section id="home">
+<div class="panel">
+<h2>Ürün Ara</h2>
+<input id="search" placeholder="Ne arıyorsun?" oninput="renderProducts()">
+</div>
+<h2>Ürünler</h2>
+<div id="products"></div>
+</section>
+
+<section id="seller" class="hidden">
+<div class="panel">
+<h2>Satıcı Paneli</h2>
+<p><b>Mağaza:</b> Bilişim Teknoloji</p>
+<p><b>Mağaza Sahibi:</b> İlhan Kaya</p>
+<p><b>Kategori:</b> Elektronik</p>
+<p><b>Şehir:</b> Malatya</p>
+</div>
+<div class="panel">
+<h2>Yeni Ürün Ekle</h2>
+<input id="name" placeholder="Ürün adı">
+<input id="price" type="number" placeholder="Ürün fiyatı (TL)">
+<input id="stock" type="number" placeholder="Stok adedi">
+<input id="photo" placeholder="Ürün fotoğraf bağlantısı (isteğe bağlı)">
+<button onclick="addProduct()">Ürünü Yayınla</button>
+<p id="message"></p>
+</div>
+<div class="panel">
+<h2>Mağaza Ürünlerim</h2>
+<div id="sellerProducts"></div>
+</div>
+</section>
+</main>
+<footer>© 2026 HEMEN Alışveriş Platformu</footer>
+
+<script>
+let products=[];
+try{
+products=JSON.parse(localStorage.getItem("hemenProducts")||"[]");
+if(!Array.isArray(products))products=[];
+}catch(e){products=[]}
+
+function save(){
+localStorage.setItem("hemenProducts",JSON.stringify(products));
+}
+function showPage(page){
+document.getElementById("home").classList.toggle("hidden",page!=="home");
+document.getElementById("seller").classList.toggle("hidden",page!=="seller");
+renderProducts();
+}
+function addProduct(){
+let name=document.getElementById("name").value.trim();
+let price=Number(document.getElementById("price").value);
+let stock=Number(document.getElementById("stock").value);
+let photo=document.getElementById("photo").value.trim();
+if(!name||price<=0||stock<0){
+document.getElementById("message").textContent="Ürün adı, geçerli fiyat ve stok girin.";
+return;
+}
+products.push({id:Date.now(),name,price,stock,photo});
+save();
+document.getElementById("name").value="";
+document.getElementById("price").value="";
+document.getElementById("stock").value="";
+document.getElementById("photo").value="";
+document.getElementById("message").textContent="Ürün eklendi!";
+renderProducts();
+}
+function deleteProduct(id){
+products=products.filter(p=>p.id!==id);
+save();
+renderProducts();
+}
+function renderProducts(){
+let search=(document.getElementById("search")?.value||"").toLocaleLowerCase("tr");
+let list=products.filter(p=>p.name.toLocaleLowerCase("tr").includes(search));
+document.getElementById("products").innerHTML=list.length?list.map(p=>`
+<div class="product">
+${p.photo?`<img src="${escapeHtml(p.photo)}" alt="">`:""}
+<div class="product-info">
+<b>${escapeHtml(p.name)}</b>
+<div class="price">${p.price} TL</div>
+<div>Stok: ${p.stock}</div>
+</div>
+</div>`).join(""):"<p>Henüz ürün eklenmedi.</p>";
+document.getElementById("sellerProducts").innerHTML=products.length?products.map(p=>`
+<div class="product">
+<div class="product-info"><b>${escapeHtml(p.name)}</b><br>${p.price} TL · Stok: ${p.stock}</div>
+<button onclick="deleteProduct(${p.id})">Sil</button>
+</div>`).join(""):"<p>Mağazanızda henüz ürün yok.</p>";
+}
+function escapeHtml(value){
+return String(value).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+renderProducts();
+</script>
+</body>
+</html>
